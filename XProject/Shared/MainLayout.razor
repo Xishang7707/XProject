@@ -1,0 +1,53 @@
+﻿@inherits LayoutComponentBase
+
+    <style>
+        header.layout-header {
+            background-color: #ffc107 !important;
+        }
+    </style>
+
+<Layout IsPage="true" ShowFooter="false">
+    <Header>
+        <div class="layout-banner">
+            <div class="layout-title">
+                <span>XProject</span>
+            </div>
+        </div>
+        <Menu Items="@IconItems" />
+    </Header>
+    <Main>
+        @Body
+    </Main>
+    @*<Footer>
+        <div class="text-center footer">Footer</div>
+    </Footer>*@
+</Layout>
+
+<Toast />
+<Dialog />
+<PopoverConfirm />
+<Message />
+<SweetAlert />
+
+@code
+{
+    private IEnumerable<MenuItem> IconItems { get; set; } = Enumerable.Empty<MenuItem>();
+
+    private IEnumerable<MenuItem> GetIconItems()
+    {
+        var ret = new List<MenuItem>
+        {
+            new MenuItem() { Text = "主页", Icon = "fa fa-life-bouy fa-fw", Url="/" },
+            new MenuItem() { Text = "添加项目", Icon = "fa fa-fa fa-fw", Url="/addproject" },
+            new MenuItem() { Text = "添加服务器", Icon = "fa fa-rebel fa-fw", Url="/addserver" }
+        };
+        return ret;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        IconItems = GetIconItems();
+    }
+
+}

@@ -1,0 +1,63 @@
+﻿@page "/addserver"
+
+<EditorForm TModel="AddServerRequestModel" Model="Model" AutoGenerateAllItem="false">
+    <FieldItems>
+        <EditorItem @bind-Field="@Model.Name" Text="名称" />
+        <EditorItem @bind-Field="@Model.Host" Text="主机" />
+        <EditorItem @bind-Field="@Model.Port" Text="端口" />
+        <EditorItem @bind-Field="@Model.User" Text="用户名" />
+        <EditorItem TValue="int">
+            <EditTemplate Context="loginType">
+                <div class="form-group col-12 col-sm-6">
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<Select TValue="int" @bind-Value="@Model.LoginType" Items="@LoginTypes" />*@
+                </div>
+            </EditTemplate>
+        </EditorItem>
+        <EditorItem @bind-Field="@Model.Password" Text="密码" />
+        @*<EditorItem @bind-Field="@Model.PrivateKey" Text="密钥" />*@
+        <EditorItem TValue="string">
+            <EditTemplate Context="key">
+                <div class="form-group col-12 col-sm-12">
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<Select TValue="int" @bind-Value="@Model.LoginType" Items="@LoginTypes" />*@
+                    <Textarea @bind-Value="Model.PrivateKey" rows="4" DisplayText="密钥" ShowLabel="true"></Textarea>
+                </div>
+            </EditTemplate>
+        </EditorItem>
+
+    </FieldItems>
+    <Buttons>
+        <Button Icon="fa fa-save" Text="提交" @onclick="ClickAddServer" />
+    </Buttons>
+</EditorForm>
+
+@code {
+    private AddServerRequestModel Model { get; set; } = new AddServerRequestModel() { LoginType = 1 };
+
+    static SelectedItem[] LoginTypes = new SelectedItem[]
+        {
+            new SelectedItem("0", "默认"),
+            new SelectedItem("1", "密码"),
+            new SelectedItem("2", "密钥"),};
+
+    [Inject]
+    private IServerApplication ServerApplication { get; set; }
+
+    [Inject]
+    private SwalService SwalService { get; set; }
+
+    private async Task ClickAddServer()
+    {
+        var result = await ServerApplication.AddServer(Model);
+
+        SwalService.Show(new SwalOption
+        {
+            Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
+            Title = result.Message
+        });
+
+        if (result.IsSuccess)
+            Model = new AddServerRequestModel();
+    }
+}

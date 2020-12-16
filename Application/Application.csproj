@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain.LinuxServer\Domain.Server.csproj" />
+    <ProjectReference Include="..\Domain.Project\Domain.Project.csproj" />
+    <ProjectReference Include="..\Infrastruct\Infrastruct.csproj" />
+    <ProjectReference Include="..\Xssh\Xssh.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Server\" />
+  </ItemGroup>
+
+</Project>

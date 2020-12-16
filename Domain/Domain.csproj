@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Infrastruct\Infrastruct.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shell\Models\Request\" />
+  </ItemGroup>
+
+</Project>

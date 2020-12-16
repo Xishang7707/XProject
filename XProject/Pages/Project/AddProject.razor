@@ -1,0 +1,34 @@
+﻿@page "/addproject"
+
+<EditorForm TModel="AddProjectRequestModel" Model="Model" AutoGenerateAllItem="false">
+    <FieldItems>
+        <EditorItem @bind-Field="@Model.ProjectName" Text="项目名称" />
+    </FieldItems>
+    <Buttons>
+        <Button Icon="fa fa-save" Text="提交" @onclick="ClickAddProject" />
+    </Buttons>
+</EditorForm>
+
+@code {
+    private AddProjectRequestModel Model { get; set; } = new AddProjectRequestModel();
+
+    [Inject]
+    private IProjectApplication ProjectApplication { get; set; }
+
+    [Inject]
+    private SwalService SwalService { get; set; }
+
+    private async Task ClickAddProject()
+    {
+        var result = await ProjectApplication.AddProject(Model);
+
+        SwalService.Show(new SwalOption
+        {
+            Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
+            Title = result.Message
+        });
+
+        if (result.IsSuccess)
+            Model = new AddProjectRequestModel();
+    }
+}

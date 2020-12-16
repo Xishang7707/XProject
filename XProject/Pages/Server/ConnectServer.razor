@@ -1,0 +1,77 @@
+﻿@page "/connectserver/{ServerId}"
+
+@if (HubConnection != null && HubConnection.State == HubConnectionState.Connected)
+{
+    <Console Items="@Messages" Height="200" IsAutoScroll="true" />
+}
+else
+{
+    <Spinner SpinnerType="SpinnerType.Grow" Color="Color.Primary"></Spinner>
+}
+
+@code {
+    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem>();
+
+    [Inject]
+    private IServerApplication ServerApplication { get; set; }
+
+    [Inject]
+    private SwalService SwalService { get; set; }
+
+    private HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public string ServerId { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Task.Run(async () =>
+        {
+            var result = await ServerApplication.ConnectServer(new ConnectServerRequestModel { ServerId = ServerId });
+
+            if (!result.IsSuccess)
+            {
+                SwalService.Show(new SwalOption
+                {
+                    Category = SwalCategory.Error,
+                    Title = result.Message
+                });
+                return;
+            }
+
+            await InitConnect(result.Model);
+        });
+
+        return Task.CompletedTask;
+    }
+
+    protected async Task InitConnect(string token)
+    {
+        HubConnection = new HubConnectionBuilder().WithUrl($"ws://127.0.0.1:5000/shell?user_id={token}").WithAutomaticReconnect().Build();
+        await HubConnection.StartAsync();
+        HubConnection.On<string>("terminalstream", s =>
+        {
+            Messages.Add(new ConsoleMessageItem { Message = s });
+        });
+    }
+
+    //static SelectedItem[] LoginTypes = new SelectedItem[]
+    //    {
+    //        new SelectedItem("0", "默认"),
+    //        new SelectedItem("1", "密码"),
+    //        new SelectedItem("2", "密钥"),};
+
+    //private async Task ClickAddServer()
+    //{
+    //    var result = await ServerApplication.AddServer(Model);
+
+    //    SwalService.Show(new SwalOption
+    //    {
+    //        Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
+    //        Title = result.Message
+    //    });
+
+    //    if (result.IsSuccess)
+    //        Model = new AddServerRequestModel();
+    //}
+}

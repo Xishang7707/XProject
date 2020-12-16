@@ -1,0 +1,91 @@
+﻿@namespace XProject.Components.Views
+@inherits MultiPagesRouterLayout
+
+<Layout IsPage="true" ShowFooter="false">
+    <Header>
+        <div class="layout-banner">
+            <div class="layout-title">
+                <span>XProject</span>
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline-primary" @onclick="@AddTab">
+            <i class="fa fa-plus-circle"></i>
+            <span>添加</span>
+        </button>
+    </Header>
+    <Main>
+        <MultiPagesTab @ref="TabSetMenu">
+            <TabItem Text="导航" IsActive="false"></TabItem>
+        </MultiPagesTab>
+    </Main>
+    <Footer>
+        <div class="text-center footer">Footer</div>
+    </Footer>
+</Layout>
+
+<Toast />
+<Dialog />
+<PopoverConfirm />
+<Message />
+<SweetAlert />
+@{
+    _ = AddTab();
+    throw new Exception("12");
+}
+@code {
+    private Tab TabSetMenu { get; set; } = new Tab();
+
+    private IEnumerable<MenuItem> GetSideMenuItems()
+    {
+        return new List<MenuItem>
+{
+            new MenuItem() { Text = "计数器"  },
+            new MenuItem() { Text = "天气预报" }
+        };
+    }
+
+    private async Task OnClickMenuItem(MenuItem item)
+    {
+        if (TabSetMenu != null)
+        {
+            var text = item.Text;
+            var tabItem = TabSetMenu.Items.FirstOrDefault(i => i.Text == text);
+            if (tabItem == null) await AddTabItem(text ?? "");
+            else await TabSetMenu.ActiveTab(tabItem);
+        }
+    }
+
+    private async Task AddTabItem(string text)
+    {
+        var item = new TabItem();
+        var parameters = new Dictionary<string, object>
+        {
+            [nameof(TabItem.Text)] = text,
+            [nameof(TabItem.IsActive)] = true,
+            [nameof(TabItem.ChildContent)] = DynamicComponent.CreateComponent<Rate>()
+        };
+        var _ = item.SetParametersAsync(ParameterView.FromDictionary(parameters));
+        if (TabSetMenu != null) await TabSetMenu.Add(item);
+    }
+
+    private async Task AddTab()
+    {
+
+        var text = $"Tab {TabSetMenu.Items.Count() + 1}";
+        var item = new TabItem();
+        var parameters = new Dictionary<string, object>
+        {
+            ["Text"] = text,
+            ["IsActive"] = true,
+            ["ChildContent"] = new RenderFragment(builder =>
+            {
+                var index = 0;
+                builder.OpenElement(index++, "div");
+                builder.AddContent(index++, $"我是新建的 Tab 名称是 {text}");
+                builder.CloseElement();
+            })
+        };
+        _ = item.SetParametersAsync(ParameterView.FromDictionary(parameters));
+        await TabSetMenu.Add(item);
+    }
+}
