@@ -1,4 +1,5 @@
 ﻿using Renci.SshNet;
+using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,10 @@ namespace Xssh.Shell.Servers.Models
             Client = new SshClient(host, port, user, password);
         }
 
-        public void InitShellStream()
+        public void InitShellStream(EventHandler<ShellDataEventArgs> @event)
         {
             ShellStream = Client.CreateShellStream(Id, 1024, 1024, 1024, 1024, 65535);
+            ShellStream.DataReceived += @event;
         }
     }
 }

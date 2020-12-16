@@ -1,16 +1,24 @@
 ﻿@page "/connectserver/{ServerId}"
-
-@if (HubConnection != null && HubConnection.State == HubConnectionState.Connected)
-{
-    <Console Items="@Messages" Height="200" IsAutoScroll="true" />
-}
-else
-{
-    <Spinner SpinnerType="SpinnerType.Grow" Color="Color.Primary"></Spinner>
-}
+@*<Console Items="@Messages" Height="500" />*@
+<Console Items="@Messages" Height="126" ShowAutoScroll="true" />
+<div>
+    @foreach (var item in Messages)
+    {
+        <p>@item.Message</p>
+    }
+</div>
+@*@if (HubConnection != null && HubConnection.State == HubConnectionState.Connected)
+    {
+    }
+    else
+    {
+        <Spinner SpinnerType="SpinnerType.Grow" Color="Color.Primary"></Spinner>
+    }*@
 
 @code {
-    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem>();
+    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem> {
+    new ConsoleMessageItem{Message="Test"}
+    };
 
     [Inject]
     private IServerApplication ServerApplication { get; set; }
@@ -23,26 +31,21 @@ else
     [Parameter]
     public string ServerId { get; set; }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        Task.Run(async () =>
+        var result = await ServerApplication.ConnectServer(new ConnectServerRequestModel { ServerId = ServerId });
+
+        if (!result.IsSuccess)
         {
-            var result = await ServerApplication.ConnectServer(new ConnectServerRequestModel { ServerId = ServerId });
-
-            if (!result.IsSuccess)
+            SwalService.Show(new SwalOption
             {
-                SwalService.Show(new SwalOption
-                {
-                    Category = SwalCategory.Error,
-                    Title = result.Message
-                });
-                return;
-            }
+                Category = SwalCategory.Error,
+                Title = result.Message
+            });
+            return;
+        }
 
-            await InitConnect(result.Model);
-        });
-
-        return Task.CompletedTask;
+        await InitConnect(result.Model);
     }
 
     protected async Task InitConnect(string token)
@@ -51,7 +54,12 @@ else
         await HubConnection.StartAsync();
         HubConnection.On<string>("terminalstream", s =>
         {
-            Messages.Add(new ConsoleMessageItem { Message = s });
+            SwalService.Show(new SwalOption
+            {
+                Category = SwalCategory.Error,
+                Title = s
+            });
+            Messages.Add(new ConsoleMessageItem { Message = s, Color = Color.Danger });
         });
     }
 

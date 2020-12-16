@@ -17,8 +17,8 @@ namespace Domain.Repositorys.Implements
 
         public Task<int> AddServer(SV_Server model)
         {
-            string sql = @"INSERT INTO sv_server(id, name, host, port, user, password, privatekey, logintype) 
-                            VALUES (@id, @name, @host, @port, @user, @password, @privatekey, @logintype);";
+            string sql = "INSERT INTO sv_server(id, name, host, port, \"user\", password, privatekey, logintype)" +
+                           "VALUES (@id, @name, @host, @port, @user, @password, @privatekey, @logintype);";
             return Context.ExecuteAsync(sql, model);
         }
 

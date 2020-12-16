@@ -23,7 +23,7 @@ namespace Xssh.Shell.Servers.Implements
 
             var info = TerminalCollection[token];
             info.Client.Connect();
-            info.InitShellStream();
+            info.InitShellStream(ShellStream_DataReceived);
             return true;
         }
 

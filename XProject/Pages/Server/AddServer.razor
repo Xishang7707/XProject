@@ -7,14 +7,24 @@
         <EditorItem @bind-Field="@Model.Port" Text="端口" />
         <EditorItem @bind-Field="@Model.User" Text="用户名" />
         <EditorItem TValue="int">
-            <EditTemplate Context="loginType">
+            <EditTemplate Context="value">
+                @{ var model = value as AddServerRequestModel; }
                 <div class="form-group col-12 col-sm-6">
                     @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
-                    @*<Select TValue="int" @bind-Value="@Model.LoginType" Items="@LoginTypes" />*@
+                    <Select TValue="int" @bind-Value="model.LoginType" Items="@LoginTypes" DisplayText="登陆类型" ShowLabel="true" />
                 </div>
             </EditTemplate>
         </EditorItem>
-        <EditorItem @bind-Field="@Model.Password" Text="密码" />
+        <EditorItem TValue="string">
+            <EditTemplate Context="value">
+                @{ var model = value as AddServerRequestModel; }
+                <div class="form-group col-12 col-sm-6">
+                    <BootstrapInput TValue="string" type="password" DisplayText="密码" ShowLabel="true" @bind-Value="model.Password" maxlength="128" placeholder="请输入 ..."></BootstrapInput>
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<Select TValue="int" @bind-Value="@model.Password" Items="@LoginTypes" DisplayText="登陆类型" ShowLabel="true" />*@
+                </div>
+            </EditTemplate>
+        </EditorItem>
         @*<EditorItem @bind-Field="@Model.PrivateKey" Text="密钥" />*@
         <EditorItem TValue="string">
             <EditTemplate Context="key">
@@ -33,7 +43,7 @@
 </EditorForm>
 
 @code {
-    private AddServerRequestModel Model { get; set; } = new AddServerRequestModel() { LoginType = 1 };
+    private AddServerRequestModel Model { get; set; } = new AddServerRequestModel();
 
     static SelectedItem[] LoginTypes = new SelectedItem[]
         {

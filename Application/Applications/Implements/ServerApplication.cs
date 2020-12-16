@@ -24,7 +24,7 @@ namespace Application.Applications.Implements
                     model.User,
                     model.Password,
                     model.PrivateKey,
-                    0
+                    model.LoginType
                     )
                 )
             );

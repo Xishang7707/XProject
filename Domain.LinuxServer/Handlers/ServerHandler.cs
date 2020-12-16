@@ -38,7 +38,7 @@ namespace Domain.Server.Handlers
                 User = request.AddServerInfo.User,
                 Password = request.AddServerInfo.Password,
                 PrivateKey = request.AddServerInfo.PrivateKey,
-                LoginType = 0
+                LoginType = request.AddServerInfo.LoginType
             }) > 0;
             Assert(ret, "添加失败");
 

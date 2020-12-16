@@ -5,10 +5,13 @@ using Domain.Repositorys.Implements;
 using Domain.Server.Commands;
 using Domain.Shell.Commands;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Xssh.Authorize;
 using Xssh.Shell.Handlers;
 using Xssh.Shell.Servers;
 using Xssh.Shell.Servers.Implements;
+using Xssh.Shell.Validator;
 
 namespace Xssh.Boot
 {
@@ -33,11 +36,12 @@ namespace Xssh.Boot
 
         private static void RegisterValidator(IServiceCollection services)
         {
-            //services.AddScoped<ICommandValidator<AddServerCommand, CommandResult>, AddServerValidation>();
+            services.AddScoped<ICommandValidator<PasswordOpenShellCommand, CommandDataResult<string>>, PasswordConnectValidation>();
         }
 
         private static void RegisterServer(IServiceCollection services)
         {
+            services.AddSingleton<IUserIdProvider, UserIdProvider>();
             services.AddSingleton<IShellTerminalServer, ShellTerminalServer>();
         }
     }

@@ -67,7 +67,7 @@ namespace Domain.Server.Validator
         protected void ValidateLoginType()
         {
             RuleFor(r => r.LoginType)
-                .NotEmpty().WithMessage("登陆类型不能为空")
+                //.NotEmpty().WithMessage("登陆类型不能为空")
                 .Must(s => new int[] { 0, 1, 2 }.Contains(s)).WithMessage("登陆类型无效");
         }
     }
