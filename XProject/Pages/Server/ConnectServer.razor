@@ -1,17 +1,19 @@
 ﻿@page "/connectserver/{ServerId}"
 
+
+
 <Console Items="@Messages" Height="750" ShowAutoScroll="true" />
 
 @code {
-    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem>();
-
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; }
     [Inject]
     private IServerApplication ServerApplication { get; set; }
-
     [Inject]
     private SwalService SwalService { get; set; }
 
     private HubConnection HubConnection { get; set; }
+    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem>();
 
     [Parameter]
     public string ServerId { get; set; }
@@ -37,7 +39,7 @@
     {
         if (firstRender)
         {
-
+            //JsRuntime.InvokeAsync()
         }
         await base.OnAfterRenderAsync(firstRender);
     }
