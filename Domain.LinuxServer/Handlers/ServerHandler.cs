@@ -18,6 +18,7 @@ namespace Domain.Server.Handlers
     public class ServerHandler : CommandHandler,
         IRequestHandler<AddServerCommand, CommandResult>,
         IRequestHandler<EditServerCommand, CommandResult>,
+        IRequestHandler<DeleteServerCommand, CommandResult>,
         IRequestHandler<ConnectServerCommand, CommandDataResult<string>>
     {
         private IServerRepository ServerRepository { get; }
@@ -49,7 +50,7 @@ namespace Domain.Server.Handlers
         public async Task<CommandDataResult<string>> Handle(ConnectServerCommand request, CancellationToken cancellationToken)
         {
             var server = await ServerRepository.Get(request.ServerIdConnect.Id);
-            Assert(server is null, "服务器不存在");
+            Assert(server is not null, "服务器不存在");
 
             return await CommandBus.Send<PasswordOpenShellCommand, CommandDataResult<string>>(
                 new PasswordOpenShellCommand(
@@ -61,7 +62,7 @@ namespace Domain.Server.Handlers
         public async Task<CommandResult> Handle(EditServerCommand request, CancellationToken cancellationToken)
         {
             var server = await ServerRepository.Get(request.Model.Id);
-            Assert(server is null, "服务器不存在");
+            Assert(server is not null, "服务器不存在");
 
             bool ret;
             ret = await ServerRepository.IsExistServerName(request.Model.Id, request.Model.Name);
@@ -79,6 +80,14 @@ namespace Domain.Server.Handlers
                 LoginType = request.Model.LoginType
             }) > 0;
             Assert(ret, "修改失败");
+
+            return new CommandResult(true, "修改成功");
+        }
+
+        public async Task<CommandResult> Handle(DeleteServerCommand request, CancellationToken cancellationToken)
+        {
+            bool ret = await ServerRepository.DeleteServer(request.Model.Id) > 0;
+            Assert(ret, "删除失败或数据已被删除");
 
             return new CommandResult(true, "修改成功");
         }

@@ -8,7 +8,8 @@ namespace Application.Applications
     public interface IServerApplication : IApplication
     {
         Task<CommandResult> AddServer(AddServerRequestModel model);
-        Task<CommandResult> EditServer(EditServerRquestModel model);
+        Task<CommandResult> EditServer(EditServerRequestModel model);
+        Task<CommandResult> DeleteServer(DeleteServerRequestModel model);
         Task<CommandDataResult<string>> ConnectServer(ConnectServerRequestModel model);
     }
 }

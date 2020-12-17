@@ -38,7 +38,15 @@ namespace Application.Applications.Implements
                 ));
         }
 
-        public Task<CommandResult> EditServer(EditServerRquestModel model)
+        public Task<CommandResult> DeleteServer(DeleteServerRequestModel model)
+        {
+            return CommandBus.Send<DeleteServerCommand, CommandResult>(new DeleteServerCommand(
+                 Guid.NewGuid().ToString("N"),
+                 new Domain.Server.Models.DeleteServer.DeleteServerInfo(model.Id)
+                ));
+        }
+
+        public Task<CommandResult> EditServer(EditServerRequestModel model)
         {
             return CommandBus.Send<EditServerCommand, CommandResult>(new EditServerCommand(
                 Guid.NewGuid().ToString("N"),

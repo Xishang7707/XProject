@@ -1,0 +1,84 @@
+﻿@page "/servers"
+@using Queries.Server
+@using Queries.Server.Models
+
+<Table TItem="ServerItem"
+       IsStriped="true" IsBordered="true" ShowLineNo="true" LineNoText="序号"
+       OnQueryAsync="@ServerQueries.GetList" @ref="TableInstance">
+    <TableColumns>
+        <TableColumn @bind-Field="@context.Name" Text="名称" />
+        <TableColumn @bind-Field="@context.Host" Text="主机" />
+        <TableColumn @bind-Field="@context.User" Text="用户" />
+        <TableColumn @bind-Field="@context.Id" Text="操作" Width="130">
+            <Template Context="value">
+                @{
+                    var model = value.Value;
+                }
+                <div class="btn-group" role="group">
+                    <Button Color="Color.Success" Icon="fa fa-desktop" Size="Size.ExtraSmall" OnClick="()=> { ConnectServer(model); }">连接</Button>
+                    <Button Color="Color.Primary" Icon="fa fa-edit" Size="Size.ExtraSmall" OnClick="()=> { EditClick(model); }">编辑</Button>
+                    <PopConfirmButton Placement="Placement.Auto" Color="Color.Danger" Size="Size.ExtraSmall" OnConfirm="async()=> { await DeleteClick(model); }"
+                                      ConfirmIcon="fa fa-exclamation-triangle fa-remove text-danger"
+                                      ConfirmButtonColor="Color.Danger"
+                                      Text="删除" Content="确定删除数据吗？" />
+                </div>
+            </Template>
+        </TableColumn>
+    </TableColumns>
+</Table>
+
+
+@code {
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IServerApplication ServerApplication { get; set; }
+    [Inject]
+    private ServerQueries ServerQueries { get; set; }
+    [Inject]
+    private DialogService DialogService { get; set; }
+    [Inject]
+    private SwalService SwalService { get; set; }
+
+    private Table<ServerItem> TableInstance { get; set; }
+    private IEnumerable<ServerItem> TableList = new List<ServerItem>();
+    public ServerItem Item { get; set; }
+
+    private Task<bool> EditSave(ServerItem serverItem)
+    {
+        return Task.FromResult(true);
+    }
+
+    public void EditClick(string id)
+    {
+        var option = new DialogOption()
+        {
+            Title = "编辑服务器",
+            BodyTemplate = builder =>
+            {
+                var index = 0;
+                builder.OpenComponent<Edit>(index);
+                builder.AddAttribute(index, "ServerId", id);
+                builder.CloseComponent();
+            }
+        };
+        option.BodyContext = option;
+        DialogService.Show(option);
+    }
+
+    public async Task DeleteClick(string id)
+    {
+        var result = await ServerApplication.DeleteServer(new DeleteServerRequestModel { Id = id });
+        SwalService.Show(new SwalOption
+        {
+            Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
+            Title = result.Message
+        });
+        if (result.IsSuccess) await TableInstance.QueryAsync();
+    }
+
+    public void ConnectServer(string id)
+    {
+        NavigationManager.NavigateTo("connectserver/" + id);
+    }
+}

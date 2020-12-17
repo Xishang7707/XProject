@@ -22,9 +22,15 @@ namespace Domain.Repositorys.Implements
             return Context.ExecuteAsync(sql, model);
         }
 
+        public Task<int> DeleteServer(string id)
+        {
+            string sql = "delete from sv_server where id=@id";
+            return Context.ExecuteAsync(sql, new { id });
+        }
+
         public Task<int> EditServer(SV_Server model)
         {
-            string sql = "update sv_server set name=@name, host=@host, port=@port, \"user\"=@user, password=@pssword, privatekey=@privatekey, logintype=@logintype where id=@id";
+            string sql = "update sv_server set name=@name, host=@host, port=@port, \"user\"=@user, password=@password, privatekey=@privatekey, logintype=@logintype where id=@id";
             return Context.ExecuteAsync(sql, model);
         }
 

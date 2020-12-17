@@ -1,0 +1,96 @@
+﻿@inherits ComponentBase
+@using Queries.Server
+
+<EditorForm TModel="EditServerRequestModel" Model="Model" AutoGenerateAllItem="false">
+    <FieldItems>
+        <EditorItem @bind-Field="@Model.Name" Text="名称" />
+        <EditorItem @bind-Field="@Model.Host" Text="主机" />
+        <EditorItem @bind-Field="@Model.Port" Text="端口" />
+        <EditorItem @bind-Field="@Model.User" Text="用户名" />
+        <EditorItem TValue="int">
+            <EditTemplate Context="value">
+                @{ var model = value as EditServerRequestModel; }
+                <div class="form-group col-12 col-sm-6">
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    <Select TValue="int" @bind-Value="model.LoginType" Items="@LoginTypes" DisplayText="登陆类型" ShowLabel="true" />
+                </div>
+            </EditTemplate>
+        </EditorItem>
+        <EditorItem TValue="string">
+            <EditTemplate Context="value">
+                @{ var model = value as EditServerRequestModel; }
+                <div class="form-group col-12 col-sm-6">
+                    <BootstrapInput TValue="string" type="password" DisplayText="密码" ShowLabel="true" @bind-Value="model.Password" maxlength="128" placeholder="请输入 ..."></BootstrapInput>
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<Select TValue="int" @bind-Value="@model.Password" Items="@LoginTypes" DisplayText="登陆类型" ShowLabel="true" />*@
+                </div>
+            </EditTemplate>
+        </EditorItem>
+        @*<EditorItem @bind-Field="@Model.PrivateKey" Text="密钥" />*@
+        <EditorItem TValue="string">
+            <EditTemplate Context="key">
+                <div class="form-group col-12 col-sm-12">
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<Select TValue="int" @bind-Value="@Model.LoginType" Items="@LoginTypes" />*@
+                    <Textarea @bind-Value="Model.PrivateKey" rows="4" DisplayText="密钥" ShowLabel="true"></Textarea>
+                </div>
+            </EditTemplate>
+        </EditorItem>
+
+    </FieldItems>
+    <Buttons>
+        <Button Icon="fa fa-save" Text="提交" @onclick="ClickEditServer" />
+    </Buttons>
+</EditorForm>
+
+@code {
+    private EditServerRequestModel Model { get; set; } = new EditServerRequestModel();
+
+    static SelectedItem[] LoginTypes = new SelectedItem[]
+        {
+            new SelectedItem("0", "默认"),
+            new SelectedItem("1", "密码"),
+            new SelectedItem("2", "密钥"),};
+
+    [Inject]
+    private IServerApplication ServerApplication { get; set; }
+    [Inject]
+    private ServerQueries ServerQueries { get; set; }
+
+    [Inject]
+    private SwalService SwalService { get; set; }
+
+    [Parameter]
+    public string ServerId { get; set; }
+
+    [CascadingParameter(Name = "BodyContext")]
+    private object? DialogOption { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var model = await ServerQueries.Get(ServerId);
+        if (model is null)
+        {
+            SwalService.Show(new SwalOption
+            {
+                Category = SwalCategory.Error,
+                Title = "服务器不存在",
+            });
+            return;
+        }
+        this.
+        Model = model;
+    }
+
+    private async Task ClickEditServer()
+    {
+        var result = await ServerApplication.EditServer(Model);
+
+        if (result.IsSuccess) (DialogOption as DialogOption).Dialog?.Toggle();
+        SwalService.Show(new SwalOption
+        {
+            Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
+            Title = result.Message
+        });
+    }
+}

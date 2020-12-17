@@ -28,6 +28,7 @@ namespace Domain.Server.Boot
         {
             services.AddScoped<IRequestHandler<AddServerCommand, CommandResult>, ServerHandler>();
             services.AddScoped<IRequestHandler<EditServerCommand, CommandResult>, ServerHandler>();
+            services.AddScoped<IRequestHandler<DeleteServerCommand, CommandResult>, ServerHandler>();
             services.AddScoped<IRequestHandler<ConnectServerCommand, CommandDataResult<string>>, ServerHandler>();
         }
 
@@ -35,6 +36,7 @@ namespace Domain.Server.Boot
         {
             services.AddScoped<ICommandValidator<AddServerCommand, CommandResult>, AddServerValidation>();
             services.AddScoped<ICommandValidator<EditServerCommand, CommandResult>, EditServerValidation>();
+            services.AddScoped<ICommandValidator<DeleteServerCommand, CommandResult>, DeleteServerValidation>();
             services.AddScoped<ICommandValidator<ConnectServerCommand, CommandDataResult<string>>, ConnectServerValidation>();
         }
 

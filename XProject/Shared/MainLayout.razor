@@ -1,10 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
-    <style>
-        header.layout-header {
-            background-color: #ffc107 !important;
-        }
-    </style>
+<style>
+    header.layout-header {
+        background-color: #ffc107 !important;
+    }
+</style>
 
 <Layout IsPage="true" ShowFooter="false">
     <Header>
@@ -19,8 +19,8 @@
         @Body
     </Main>
     @*<Footer>
-        <div class="text-center footer">Footer</div>
-    </Footer>*@
+            <div class="text-center footer">Footer</div>
+        </Footer>*@
 </Layout>
 
 <Toast />
@@ -36,7 +36,7 @@
     private IEnumerable<MenuItem> GetIconItems()
     {
         var ret = new List<MenuItem>
-        {
+    {
             new MenuItem() { Text = "主页", Icon = "fa fa-life-bouy fa-fw", Url="/" },
             new MenuItem() { Text = "服务器", Icon = "fa fa-life-bouy fa-fw", Url="/servers" },
             new MenuItem() { Text = "添加项目", Icon = "fa fa-fa fa-fw", Url="/addproject" },

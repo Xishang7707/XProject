@@ -11,6 +11,7 @@ namespace Domain.Repositorys
     public interface IServerRepository : IRepository
     {
         Task<int> AddServer(SV_Server model);
+        Task<int> DeleteServer(string id);
         Task<bool> IsExistServerName(string serverName);
         Task<bool> IsExistServerName(string id, string serverName);
         Task<SV_Server> Get(string id);
