@@ -18,7 +18,7 @@ namespace Domain.Server.Validator
             ValidatePort();
             ValidateUser();
             ValidateLoginType();
-            if (request.AddServerInfo.LoginType != 2)
+            if (request.Model.LoginType != 2)
                 ValidatePassword();
             else
                 ValidatePrivateKey();
@@ -26,13 +26,13 @@ namespace Domain.Server.Validator
             return Valid(new Domain.Models.SV_Server
             {
                 Id = request.CommandId,
-                Name = request.AddServerInfo.Name,
-                Host = request.AddServerInfo.Host,
-                Port = request.AddServerInfo.Port,
-                User = request.AddServerInfo.User,
-                Password = request.AddServerInfo.Password,
-                PrivateKey = request.AddServerInfo.PrivateKey,
-                LoginType = request.AddServerInfo.LoginType
+                Name = request.Model.Name,
+                Host = request.Model.Host,
+                Port = request.Model.Port,
+                User = request.Model.User,
+                Password = request.Model.Password,
+                PrivateKey = request.Model.PrivateKey,
+                LoginType = request.Model.LoginType
             });
         }
     }

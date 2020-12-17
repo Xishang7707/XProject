@@ -37,5 +37,23 @@ namespace Application.Applications.Implements
                 new Domain.Server.Models.ConnectServer.ServerIdConnect(model.ServerId)
                 ));
         }
+
+        public Task<CommandResult> EditServer(EditServerRquestModel model)
+        {
+            return CommandBus.Send<EditServerCommand, CommandResult>(new EditServerCommand(
+                Guid.NewGuid().ToString("N"),
+                new Domain.Server.Models.EditServer.EditServerInfo(
+                    model.Id,
+                    model.Name,
+                    model.Host,
+                    model.Port,
+                    model.User,
+                    model.Password,
+                    model.PrivateKey,
+                    model.LoginType
+                    )
+                )
+            );
+        }
     }
 }

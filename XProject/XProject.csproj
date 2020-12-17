@@ -6,11 +6,13 @@
 
   <ItemGroup>
     <PackageReference Include="BootstrapBlazor" Version="5.0.6" />
+    <PackageReference Include="BootstrapBlazor.TableExport" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Queries\Queries.csproj" />
     <ProjectReference Include="..\Xssh\Xssh.csproj" />
   </ItemGroup>
 

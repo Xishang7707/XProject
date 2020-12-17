@@ -5,10 +5,10 @@ namespace Domain.Server.Commands
 {
     public class AddServerCommand : Command<CommandResult>
     {
-        public AddServerInfo AddServerInfo { get; }
+        public AddServerInfo Model { get; }
         public AddServerCommand(string commandId, AddServerInfo addServerInfo) : base(commandId)
         {
-            AddServerInfo = addServerInfo;
+            Model = addServerInfo;
         }
     }
 }

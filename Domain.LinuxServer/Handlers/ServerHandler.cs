@@ -17,6 +17,7 @@ namespace Domain.Server.Handlers
 {
     public class ServerHandler : CommandHandler,
         IRequestHandler<AddServerCommand, CommandResult>,
+        IRequestHandler<EditServerCommand, CommandResult>,
         IRequestHandler<ConnectServerCommand, CommandDataResult<string>>
     {
         private IServerRepository ServerRepository { get; }
@@ -26,19 +27,19 @@ namespace Domain.Server.Handlers
         public async Task<CommandResult> Handle(AddServerCommand request, CancellationToken cancellationToken)
         {
             bool ret;
-            ret = await ServerRepository.IsExistServerName(request.AddServerInfo.Name);
+            ret = await ServerRepository.IsExistServerName(request.Model.Name);
             Assert(!ret, "已存在相同名称的服务器");
 
             ret = await ServerRepository.AddServer(new Domain.Models.SV_Server
             {
                 Id = request.CommandId,
-                Name = request.AddServerInfo.Name,
-                Host = request.AddServerInfo.Host,
-                Port = request.AddServerInfo.Port,
-                User = request.AddServerInfo.User,
-                Password = request.AddServerInfo.Password,
-                PrivateKey = request.AddServerInfo.PrivateKey,
-                LoginType = request.AddServerInfo.LoginType
+                Name = request.Model.Name,
+                Host = request.Model.Host,
+                Port = request.Model.Port,
+                User = request.Model.User,
+                Password = request.Model.Password,
+                PrivateKey = request.Model.PrivateKey,
+                LoginType = request.Model.LoginType
             }) > 0;
             Assert(ret, "添加失败");
 
@@ -48,14 +49,38 @@ namespace Domain.Server.Handlers
         public async Task<CommandDataResult<string>> Handle(ConnectServerCommand request, CancellationToken cancellationToken)
         {
             var server = await ServerRepository.Get(request.ServerIdConnect.Id);
-            if (server == null)
-                throw new Exception("服务器不存在");
+            Assert(server is null, "服务器不存在");
 
             return await CommandBus.Send<PasswordOpenShellCommand, CommandDataResult<string>>(
                 new PasswordOpenShellCommand(
                     request.CommandId,
                     new PasswordOpenShell(server.Host, server.Port, server.User, server.Password)
                 ));
+        }
+
+        public async Task<CommandResult> Handle(EditServerCommand request, CancellationToken cancellationToken)
+        {
+            var server = await ServerRepository.Get(request.Model.Id);
+            Assert(server is null, "服务器不存在");
+
+            bool ret;
+            ret = await ServerRepository.IsExistServerName(request.Model.Id, request.Model.Name);
+            Assert(!ret, "已存在相同名称的服务器");
+
+            ret = await ServerRepository.EditServer(new Domain.Models.SV_Server
+            {
+                Id = request.Model.Id,
+                Name = request.Model.Name,
+                Host = request.Model.Host,
+                Port = request.Model.Port,
+                User = request.Model.User,
+                Password = request.Model.Password,
+                PrivateKey = request.Model.PrivateKey,
+                LoginType = request.Model.LoginType
+            }) > 0;
+            Assert(ret, "修改失败");
+
+            return new CommandResult(true, "修改成功");
         }
     }
 }

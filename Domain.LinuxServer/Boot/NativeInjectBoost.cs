@@ -27,12 +27,14 @@ namespace Domain.Server.Boot
         private static void RegisterHandler(IServiceCollection services)
         {
             services.AddScoped<IRequestHandler<AddServerCommand, CommandResult>, ServerHandler>();
+            services.AddScoped<IRequestHandler<EditServerCommand, CommandResult>, ServerHandler>();
             services.AddScoped<IRequestHandler<ConnectServerCommand, CommandDataResult<string>>, ServerHandler>();
         }
 
         private static void RegisterValidator(IServiceCollection services)
         {
             services.AddScoped<ICommandValidator<AddServerCommand, CommandResult>, AddServerValidation>();
+            services.AddScoped<ICommandValidator<EditServerCommand, CommandResult>, EditServerValidation>();
             services.AddScoped<ICommandValidator<ConnectServerCommand, CommandDataResult<string>>, ConnectServerValidation>();
         }
 

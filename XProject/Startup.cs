@@ -32,6 +32,7 @@ namespace XProject
             services.AddSingleton<WeatherForecastService>();
             services.AddBootstrapBlazor();
             Application.Boot.NativeInjectBoost.Register(services, typeof(Startup));
+            Queries.Boot.NativeInjectBoost.Register(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

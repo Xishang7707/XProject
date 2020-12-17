@@ -27,6 +27,7 @@ namespace Infrastruct.Boot
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CommandBehavor<,>));
             services.AddSingleton<DBConfig>();
             services.AddScoped<ExcDBContext>();
+            services.AddScoped<QueryDBContext>();
         }
     }
 }

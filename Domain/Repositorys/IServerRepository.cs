@@ -12,6 +12,8 @@ namespace Domain.Repositorys
     {
         Task<int> AddServer(SV_Server model);
         Task<bool> IsExistServerName(string serverName);
+        Task<bool> IsExistServerName(string id, string serverName);
         Task<SV_Server> Get(string id);
+        Task<int> EditServer(SV_Server model);
     }
 }
