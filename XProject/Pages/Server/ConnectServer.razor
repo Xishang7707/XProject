@@ -1,24 +1,9 @@
 ﻿@page "/connectserver/{ServerId}"
-@*<Console Items="@Messages" Height="500" />*@
-<Console Items="@Messages" Height="126" ShowAutoScroll="true" />
-<div>
-    @foreach (var item in Messages)
-    {
-        <p>@item.Message</p>
-    }
-</div>
-@*@if (HubConnection != null && HubConnection.State == HubConnectionState.Connected)
-    {
-    }
-    else
-    {
-        <Spinner SpinnerType="SpinnerType.Grow" Color="Color.Primary"></Spinner>
-    }*@
+
+<Console Items="@Messages" Height="750" ShowAutoScroll="true" />
 
 @code {
-    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem> {
-    new ConsoleMessageItem{Message="Test"}
-    };
+    public List<ConsoleMessageItem> Messages { get; set; } = new List<ConsoleMessageItem>();
 
     [Inject]
     private IServerApplication ServerApplication { get; set; }
@@ -48,38 +33,46 @@
         await InitConnect(result.Model);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+
+
     protected async Task InitConnect(string token)
     {
-        HubConnection = new HubConnectionBuilder().WithUrl($"ws://127.0.0.1:5000/shell?user_id={token}").WithAutomaticReconnect().Build();
+        HubConnection = new
+            HubConnectionBuilder().WithUrl($"ws://127.0.0.1:5000/shell?user_id={token}").WithAutomaticReconnect().Build();
         await HubConnection.StartAsync();
         HubConnection.On<string>("terminalstream", s =>
         {
-            SwalService.Show(new SwalOption
-            {
-                Category = SwalCategory.Error,
-                Title = s
-            });
             Messages.Add(new ConsoleMessageItem { Message = s, Color = Color.Danger });
+            StateHasChanged();
         });
     }
 
     //static SelectedItem[] LoginTypes = new SelectedItem[]
-    //    {
-    //        new SelectedItem("0", "默认"),
-    //        new SelectedItem("1", "密码"),
-    //        new SelectedItem("2", "密钥"),};
+    // {
+    // new SelectedItem("0", "默认"),
+    // new SelectedItem("1", "密码"),
+    // new SelectedItem("2", "密钥"),};
 
     //private async Task ClickAddServer()
     //{
-    //    var result = await ServerApplication.AddServer(Model);
+    // var result = await ServerApplication.AddServer(Model);
 
-    //    SwalService.Show(new SwalOption
-    //    {
-    //        Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
-    //        Title = result.Message
-    //    });
+    // SwalService.Show(new SwalOption
+    // {
+    // Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
+    // Title = result.Message
+    // });
 
-    //    if (result.IsSuccess)
-    //        Model = new AddServerRequestModel();
+    // if (result.IsSuccess)
+    // Model = new AddServerRequestModel();
     //}
 }
