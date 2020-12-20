@@ -7,6 +7,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,13 +17,14 @@
     <link href="css/site.css" rel="stylesheet" />
     <link rel="stylesheet" href="_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css">
     <link href="XProject.styles.css" rel="stylesheet" />
-    <link href="~/lib/xterm/css/xterm.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/xterm/css/xterm.css">
     <style>
-        div.swal > .modal.fade.show {
+        div.swal>.modal.fade.show {
             z-index: 9999999 !important;
         }
     </style>
 </head>
+
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
@@ -39,6 +41,8 @@
 
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
-    <script src="~/lib/xterm/lib/xterm.js"></script>
+    <script src="~/lib/xterm/js/xterm.js"></script>
+    <script src="~/js/terminal.js"></script>
 </body>
+
 </html>

@@ -2,8 +2,7 @@
 @using Queries.Server
 @using Queries.Server.Models
 
-<Table TItem="ServerItem"
-       IsStriped="true" IsBordered="true" ShowLineNo="true" LineNoText="序号"
+<Table TItem="ServerItem" IsStriped="true" IsBordered="true" ShowLineNo="true" LineNoText="序号"
        OnQueryAsync="@ServerQueries.GetList" @ref="TableInstance">
     <TableColumns>
         <TableColumn @bind-Field="@context.Name" Text="名称" />
@@ -15,18 +14,23 @@
                     var model = value.Value;
                 }
                 <div class="btn-group" role="group">
-                    <Button Color="Color.Success" Icon="fa fa-desktop" Size="Size.ExtraSmall" OnClick="()=> { ConnectServer(model); }">连接</Button>
-                    <Button Color="Color.Primary" Icon="fa fa-edit" Size="Size.ExtraSmall" OnClick="()=> { EditClick(model); }">编辑</Button>
-                    <PopConfirmButton Placement="Placement.Auto" Color="Color.Danger" Size="Size.ExtraSmall" OnConfirm="async()=> { await DeleteClick(model); }"
-                                      ConfirmIcon="fa fa-exclamation-triangle fa-remove text-danger"
-                                      ConfirmButtonColor="Color.Danger"
+                    <Button Color="Color.Success" Icon="fa fa-desktop" Size="Size.ExtraSmall"
+                            OnClick="async ()=> { await ConnectServer(model); }">
+                        连接
+                    </Button>
+                    <Button Color="Color.Primary" Icon="fa fa-edit" Size="Size.ExtraSmall"
+                            OnClick="()=> { EditClick(model); }">
+                        编辑
+                    </Button>
+                    <PopConfirmButton Placement="Placement.Auto" Color="Color.Danger" Size="Size.ExtraSmall"
+                                      OnConfirm="async()=> { await DeleteClick(model); }"
+                                      ConfirmIcon="fa fa-exclamation-triangle fa-remove text-danger" ConfirmButtonColor="Color.Danger"
                                       Text="删除" Content="确定删除数据吗？" />
                 </div>
             </Template>
         </TableColumn>
     </TableColumns>
 </Table>
-
 
 @code {
     [Inject]
@@ -39,6 +43,8 @@
     private DialogService DialogService { get; set; }
     [Inject]
     private SwalService SwalService { get; set; }
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
 
     private Table<ServerItem> TableInstance { get; set; }
     private IEnumerable<ServerItem> TableList = new List<ServerItem>();
@@ -77,8 +83,11 @@
         if (result.IsSuccess) await TableInstance.QueryAsync();
     }
 
-    public void ConnectServer(string id)
+    public Task ConnectServer(string id)
     {
         NavigationManager.NavigateTo("connectserver/" + id);
+        return Task.CompletedTask;
     }
+
+    
 }

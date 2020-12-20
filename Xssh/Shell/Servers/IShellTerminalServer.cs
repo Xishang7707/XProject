@@ -11,5 +11,6 @@ namespace Xssh.Shell.Servers
         string OpenShell(PasswordOpenShell info);
         bool AddHub(string token);
         void RemoveHub(string token);
+        void Send(string token, string str);
     }
 }

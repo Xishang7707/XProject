@@ -9,20 +9,27 @@
         <EditorItem @bind-Field="@Model.User" Text="用户名" />
         <EditorItem TValue="int">
             <EditTemplate Context="value">
-                @{ var model = value as EditServerRequestModel; }
+                @{
+                    var model = value as EditServerRequestModel; }
                 <div class="form-group col-12 col-sm-6">
-                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
-                    <Select TValue="int" @bind-Value="model.LoginType" Items="@LoginTypes" DisplayText="登陆类型" ShowLabel="true" />
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text"
+                        ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    <Select TValue="int" @bind-Value="model.LoginType" Items="@LoginTypes" DisplayText="登陆类型"
+                        ShowLabel="true" />
                 </div>
             </EditTemplate>
         </EditorItem>
         <EditorItem TValue="string">
             <EditTemplate Context="value">
-                @{ var model = value as EditServerRequestModel; }
+                @{
+                    var model = value as EditServerRequestModel; }
                 <div class="form-group col-12 col-sm-6">
-                    <BootstrapInput TValue="string" type="password" DisplayText="密码" ShowLabel="true" @bind-Value="model.Password" maxlength="128" placeholder="请输入 ..."></BootstrapInput>
-                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
-                    @*<Select TValue="int" @bind-Value="@model.Password" Items="@LoginTypes" DisplayText="登陆类型" ShowLabel="true" />*@
+                    <BootstrapInput TValue="string" type="password" DisplayText="密码" ShowLabel="true"
+                        @bind-Value="model.Password" maxlength="128" placeholder="请输入 ..."></BootstrapInput>
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text"
+                        ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<Select TValue="int" @bind-Value="@model.Password" Items="@LoginTypes" DisplayText="登陆类型"
+                        ShowLabel="true" />*@
                 </div>
             </EditTemplate>
         </EditorItem>
@@ -30,7 +37,8 @@
         <EditorItem TValue="string">
             <EditTemplate Context="key">
                 <div class="form-group col-12 col-sm-12">
-                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text" ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
+                    @*<DropdownList Data="@LoginTypes" @bind-Value="@Model.LoginType" TextField="Text"
+                        ValueField="Value" DisplayText="登陆类型" ShowLabel="true"></DropdownList>*@
                     @*<Select TValue="int" @bind-Value="@Model.LoginType" Items="@LoginTypes" />*@
                     <Textarea @bind-Value="Model.PrivateKey" rows="4" DisplayText="密钥" ShowLabel="true"></Textarea>
                 </div>
@@ -48,9 +56,9 @@
 
     static SelectedItem[] LoginTypes = new SelectedItem[]
         {
-            new SelectedItem("0", "默认"),
-            new SelectedItem("1", "密码"),
-            new SelectedItem("2", "密钥"),};
+new SelectedItem("0", "默认"),
+new SelectedItem("1", "密码"),
+new SelectedItem("2", "密钥"),};
 
     [Inject]
     private IServerApplication ServerApplication { get; set; }
@@ -63,8 +71,9 @@
     [Parameter]
     public string ServerId { get; set; }
 
+//#nullable enable
     [CascadingParameter(Name = "BodyContext")]
-    private object? DialogOption { get; set; }
+    private object DialogOption { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,14 +88,14 @@
             return;
         }
         this.
-        Model = model;
+            Model = model;
     }
 
     private async Task ClickEditServer()
     {
         var result = await ServerApplication.EditServer(Model);
 
-        if (result.IsSuccess) (DialogOption as DialogOption).Dialog?.Toggle();
+        if (result.IsSuccess) _ = ((DialogOption)DialogOption).Dialog.Toggle();
         SwalService.Show(new SwalOption
         {
             Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,

@@ -1,6 +1,7 @@
 ﻿using Core.Servers;
 using Domain.Shell.Models.OpenShell;
 using Microsoft.AspNetCore.SignalR;
+using Renci.SshNet;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30,8 +31,8 @@ namespace Xssh.Shell.Servers.Implements
         public void RemoveHub(string token)
         {
             TerminalCollection.TryRemove(token, out var info);
-            info.ShellStream.Close();
-            info.Client.Disconnect();
+            info?.ShellStream?.Close();
+            info?.Client.Disconnect();
         }
 
         public string OpenShell(PasswordOpenShell info)
@@ -47,9 +48,30 @@ namespace Xssh.Shell.Servers.Implements
             return id;
         }
 
+        public void Send(string token, string str)
+        {
+            if (!TerminalCollection.ContainsKey(token)) return;
+
+            ShellInfo info = TerminalCollection[token];
+            info.ShellStream.WriteLine(str);
+        }
+
         private void ShellStream_DataReceived(object sender, Renci.SshNet.Common.ShellDataEventArgs e)
         {
-            ShellInfo info = TerminalCollection.Values.First(f => f.ShellStream.Equals(sender));
+            ShellInfo info = TerminalCollection.Values.FirstOrDefault(f => f.ShellStream != null && f.ShellStream.Equals(sender));
+            if (TerminalCollection.Values.Any(a => a == null || a.ShellStream == null))
+            {
+                var list = TerminalCollection.Values.Where(a => a == null || a.ShellStream == null).ToList();
+                foreach (var item in list)
+                {
+                    TerminalCollection.TryRemove(item.Id, out _);
+                }
+            }
+            if (info == null)
+            {
+                (sender as ShellStream).Close();
+                return;
+            }
             HubContext.Clients.User(info.Id).SendAsync("terminalstream", Encoding.Default.GetString(e.Data));
         }
     }

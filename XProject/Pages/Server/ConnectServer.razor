@@ -1,12 +1,10 @@
 ﻿@page "/connectserver/{ServerId}"
 
 
-
-<Console Items="@Messages" Height="750" ShowAutoScroll="true" />
-
+<div id="terminal"></div>
 @code {
     [Inject]
-    public IJSRuntime JsRuntime { get; set; }
+    public IJSRuntime JSRuntime { get; set; }
     [Inject]
     private IServerApplication ServerApplication { get; set; }
     [Inject]
@@ -32,49 +30,49 @@
             return;
         }
 
-        await InitConnect(result.Model);
+        _ = InitConnect(result.Model);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            if (HubConnection.State != HubConnectionState.Connected) await HubConnection.StartAsync();
+            await JSRuntime.InvokeVoidAsync("InitTerminal", DotNetObjectReference.Create(this), "terminal", 500);
             //JsRuntime.InvokeAsync()
+        }
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("TerminalReload");
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine(ex.Message);
         }
         await base.OnAfterRenderAsync(firstRender);
     }
 
-
-
-    protected async Task InitConnect(string token)
+    protected Task InitConnect(string token)
     {
+
         HubConnection = new
             HubConnectionBuilder().WithUrl($"ws://127.0.0.1:5000/shell?user_id={token}").WithAutomaticReconnect().Build();
-        await HubConnection.StartAsync();
-        HubConnection.On<string>("terminalstream", s =>
-        {
-            Messages.Add(new ConsoleMessageItem { Message = s, Color = Color.Danger });
-            StateHasChanged();
+        HubConnection.On<string>("terminalstream", async s =>
+            {
+            await JSRuntime.InvokeVoidAsync("TerminalOutput", s);
+            //Messages.Add(new ConsoleMessageItem { Message = s, Color = Color.Danger });
+            //StateHasChanged();
+        });
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task TerminalWrite(string str)
+    {
+        return Task.Run(() =>
+            {
+            HubConnection.SendAsync("terminalstream", str);
         });
     }
 
-    //static SelectedItem[] LoginTypes = new SelectedItem[]
-    // {
-    // new SelectedItem("0", "默认"),
-    // new SelectedItem("1", "密码"),
-    // new SelectedItem("2", "密钥"),};
-
-    //private async Task ClickAddServer()
-    //{
-    // var result = await ServerApplication.AddServer(Model);
-
-    // SwalService.Show(new SwalOption
-    // {
-    // Category = result.IsSuccess ? SwalCategory.Success : SwalCategory.Error,
-    // Title = result.Message
-    // });
-
-    // if (result.IsSuccess)
-    // Model = new AddServerRequestModel();
-    //}
 }

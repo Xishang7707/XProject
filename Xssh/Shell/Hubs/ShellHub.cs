@@ -22,5 +22,11 @@ namespace Xssh.Shell.Hubs
             ShellTerminalServer.RemoveHub(this.GetToken());
             return base.OnDisconnectedAsync(exception);
         }
+
+        public Task TerminalStream(string str)
+        {
+            ShellTerminalServer.Send(this.GetToken(), str);
+            return Task.CompletedTask;
+        }
     }
 }
